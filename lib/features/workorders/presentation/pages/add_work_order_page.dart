@@ -284,7 +284,7 @@ class _AddWorkOrderPageState extends State<AddWorkOrderPage> {
                           icon: const Icon(Icons.event),
                           label: Text(
                             _promisedAt == null
-                                ? 'Fecha de promesa'
+                                ? 'Fecha de entrega'
                                 : _promisedAt!.toString().substring(0, 16),
                           ),
                         ),
