@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // shop del usuario actual (Reference a shops/{id}) tomado de users/{uid}
+    function userShop() {
+      return isSignedIn()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.shopId
+        : null;
+    }
+
+    // Validaciones comunes para colecciones con campo shopId (tipo Reference)
+    function sameShopForResource() { // doc existente
+      return resource.data.shopId == userShop();
+    }
+    function sameShopForCreate() {   // doc a crear
+      return request.resource.data.shopId == userShop();
+    }
+    function shopUnchanged() {       // impedir cambiar shopId en updates
+      return request.resource.data.shopId == resource.data.shopId;
+    }
+
+    // --- Perfiles de usuario
+    match /users/{uid} {
+      // El usuario puede LEER su propio perfil (para extraer shopId)
+      allow read: if isSignedIn() && uid == request.auth.uid;
+
+      // Adminístralo por consola (no desde la app)
+      allow create, update, delete: if false;
+    }
+
+    // --- Catálogo de tiendas
+    match /shops/{id} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    
+    // --- Clientes
+    match /customers/{id} {
+      allow create: if isSignedIn() && sameShopForCreate();
+      allow read:    if isSignedIn() && sameShopForResource();
+      allow update:  if isSignedIn() && sameShopForResource() && shopUnchanged();
+      allow delete:  if isSignedIn() && sameShopForResource();
+    }
+
+    // --- Inventario
+    match /inventoryItems/{id} {
+      allow create: if isSignedIn() && sameShopForCreate();
+      allow read:    if isSignedIn() && sameShopForResource();
+      allow update:  if isSignedIn() && sameShopForResource() && shopUnchanged();
+      allow delete:  if isSignedIn() && sameShopForResource();
+    }
+
+    // --- Órdenes y subcolecciones
+    match /workOrders/{woId} {
+      allow create: if isSignedIn() && sameShopForCreate();
+      allow read:    if isSignedIn() && sameShopForResource();
+      allow update:  if isSignedIn() && sameShopForResource() && shopUnchanged();
+      allow delete:  if isSignedIn() && sameShopForResource();
+
+      // items (heredan shop del padre)
+      match /items/{itemId} {
+        allow read, create, update, delete:
+          if isSignedIn() &&
+             get(/databases/$(database)/documents/workOrders/$(woId)).data.shopId == userShop();
+      }
+
+      // subcolección: attachments (heredan shop del padre)
+match /attachments/{attId} {
+  allow read, create, update, delete:
+    if isSignedIn() &&
+       get(/databases/$(database)/documents/workOrders/$(woId)).data.shopId == userShop();
+}
+      // payments (heredan shop del padre)
+      match /payments/{payId} {
+        allow read, create, update, delete:
+          if isSignedIn() &&
+             get(/databases/$(database)/documents/workOrders/$(woId)).data.shopId == userShop();
+      }
+
+      // historial (solo agregar/leer; inmutable)
+      match /statusHistory/{hId} {
+        allow read, create:
+          if isSignedIn() &&
+             get(/databases/$(database)/documents/workOrders/$(woId)).data.shopId == userShop();
+        allow update, delete: if false;
+      }
+    }
+
+    // Denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

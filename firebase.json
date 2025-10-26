@@ -1,0 +1,31 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "ctechrepair-af307",
+          "appId": "1:926922686229:android:8dbc18589e4e6b9391331c",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "ctechrepair-af307",
+          "configurations": {
+            "android": "1:926922686229:android:8dbc18589e4e6b9391331c",
+            "web": "1:926922686229:web:7dcf01424349639391331c"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "southamerica-east1",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+}

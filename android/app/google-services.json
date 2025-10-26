@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "926922686229",
+    "project_id": "ctechrepair-af307",
+    "storage_bucket": "ctechrepair-af307.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926922686229:android:8dbc18589e4e6b9391331c",
+        "android_client_info": {
+          "package_name": "pe.camilatech.ctechrepair"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIkej6UDRR8iJ91OUBoz5u3WO62nKsJrw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
